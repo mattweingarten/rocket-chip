@@ -1,0 +1,6 @@
+[submodule "chipyard"]
+	path = chipyard
+	url = https://github.com/mattweingarten/chipyard
+[submodule "riscv-tests"]
+	path = riscv-tests
+	url = https://github.com/mattweingarten/riscv-tests
