@@ -4,3 +4,6 @@
 [submodule "riscv-tests"]
 	path = riscv-tests
 	url = https://github.com/mattweingarten/riscv-tests
+[submodule "libgloss"]
+	path = libgloss
+	url = https://github.com/ucb-bar/libgloss-htif.git
