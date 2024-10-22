@@ -78,7 +78,7 @@ As a starting point we will run traditional RTL simulation. In future, when perf
 cd sims/verilator
 ```
 
-We can build a Simulator for a specific Core, for now we have test only `[RocketConifig, SmallBoomConfig, IbexConfig]`
+We can build a Simulator for a specific Core, for now we have test only `[RocketConfig, SmallBoomConfig, IbexConfig]`
 
 ```
 make CONFIG=<config>
