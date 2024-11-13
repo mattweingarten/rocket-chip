@@ -7,3 +7,7 @@
 [submodule "libgloss"]
 	path = libgloss
 	url = https://github.com/ucb-bar/libgloss-htif.git
+[submodule "ibex"]
+	path = ibex
+	url = https://github.com/michaelg29/ibex
+	branch = master

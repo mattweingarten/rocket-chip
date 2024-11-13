@@ -1,0 +1,7 @@
+Total numbers of exceptions: 5
+
+exception:ibex_top/default_mode/clk_i
+exception:ibex_top/default_mode/C2O
+exception:ibex_top/default_mode/I2C
+exception:ibex_top/default_mode/I2O
+exception:ibex_top/default_mode/C2C

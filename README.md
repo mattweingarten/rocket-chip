@@ -42,8 +42,12 @@ Install conda packages
 conda install -n base conda-libmamba-solver
 conda config --set solver libmamba
 
+conda config --add channels ucb-bar
+conda config --set channel_priority strict
 conda install firtool
 ```
+
+Start the virtual environment (you may need to run `conda init` first then restart your bash session)
 
 ```
 conda activate base
@@ -78,7 +82,7 @@ As a starting point we will run traditional RTL simulation. In future, when perf
 cd sims/verilator
 ```
 
-We can build a Simulator for a specific Core, for now we have test only `[RocketConifig, SmallBoomConfig, IbexConfig]`
+We can build a Simulator for a specific Core, for now we have test only `[RocketConfig, SmallBoomConfig, IbexConfig]`
 
 ```
 make CONFIG=<config>
