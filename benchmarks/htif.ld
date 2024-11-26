@@ -1,1 +1,1 @@
-/home/matt/Workspace/riscv-pmu-core/libgloss/util/htif.ld
+../libgloss/util/htif.ld

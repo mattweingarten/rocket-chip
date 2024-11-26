@@ -1,1 +1,6 @@
 libgloss
+*.riscv
+*.dump
+*.o
+*.s
+*.img

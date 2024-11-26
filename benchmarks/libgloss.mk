@@ -5,22 +5,30 @@ ifndef GCC
 $(error GCC is not defined)
 endif
 
+
+
+
 ifndef TARGET
 $(error TARGET is not defined)
 endif
 
-libgloss_specs := htif_nano.specs
+libgloss_specs := htif.specs
 
 # Test whether libgloss-htif is globally installed and usable
 # Define BUILD_LIBGLOSS=1 to unconditionally force a local build
+
+# We set BUILD libgloss equal to 1 always for local build
+BUILD_LIBGLOSS=1
+
 BUILD_LIBGLOSS ?= $(shell { echo 'int main(void) { return 0; }' | \
 	$(GCC) -xc -specs=$(libgloss_specs) -o /dev/null - 2> /dev/null ; } || \
 	echo "$$?")
 
 ifneq ($(BUILD_LIBGLOSS),)
-$(info libgloss-htif: Using local build)
+$(info libgloss-htif: Using local build testing)
+# $(info $(libgloss_specs))
 
-libgloss_srcdir := ../libgloss
+libgloss_srcdir := ../chipyard/toolchains/libgloss
 libgloss_builddir := libgloss
 libgloss_specs := $(libgloss_srcdir)/util/$(libgloss_specs)
 libgloss_lib := $(libgloss_builddir)/libgloss_htif.a
