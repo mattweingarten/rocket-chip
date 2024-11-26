@@ -9,11 +9,8 @@ Matt (mew2260)
 
 # General Setup
 
-Make sure to download submodules first
+DO NOT use git submodule recurse. Follow steps here.
 
-```
-git submodule update --init --recursive
-```
 
 
 ### Step 1 -- Install Conda
@@ -54,24 +51,17 @@ conda activate base
 ```
 
 
-Make sure we have all dependencies:
+Make sure we have all dependencies.
+Setup script should take care of everything: 
 
 ```
-cd ./chipyard
+bash setup.sh
 ```
-
-```
-./build-setup.sh riscv-tools
-```
-
 
 From now on always set env before running any command:
 ```
-source ./env.sh
+source chipyard/env.sh
 ```
-
-
-
 
 ### Step 2: Build Verilator simulator for cores
 

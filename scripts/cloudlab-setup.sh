@@ -1,6 +1,6 @@
 #!/bin/sh
 
-OUT_DIR=/users/wmatt/
+OUT_DIR=/users/$1
 
 "cd $OUT_DIR"
 
