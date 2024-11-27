@@ -3,6 +3,7 @@
 #include "nvdla.h"
 #include "mmio.h"
 #include <riscv-pk/encoding.h>
+#include "pmu_defs.h"
 
 #define NVDLA_BASE 0x10040000
 #define reg_write(addr,val) reg_write32(NVDLA_BASE+addr,val)
@@ -10,6 +11,11 @@
 
 int main(void)
 {
+
+    #ifdef PMU
+        start_counters(); 
+    #endif
+
     //----------## Layer:CDP_0: cross layer dependency, begin----------
     //----------## Layer:CDP_0: cross layer dependency, end----------
     //----------## Layer:CDP_0: set producer pointer, begin----------
@@ -463,6 +469,9 @@ int main(void)
 
     uint64_t cycle2 = rdcycle();
     printf("cycle1: %lu, cycle2: %lu, diff: %lu\n", cycle1, cycle2, cycle2 - cycle1 );
-
+    
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 0;
 }

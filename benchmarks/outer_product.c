@@ -9,7 +9,8 @@
 
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 #define N 16
 int n = N;
@@ -39,6 +40,9 @@ void kernel(int  mat_a[n][n],int  mat_b[n][n], int partial[n][n][n], int result[
 
 
 int main() {
+    #ifdef PMU
+        start_counters(); 
+    #endif
     int i = 0, j = 0, k = 0;
     int mat_a[n][n], mat_b[n][n], result[n][n], partial[n][n][n];
     for (i = 0; i < n; ++i) {
@@ -50,5 +54,8 @@ int main() {
     }
 
     kernel(mat_a,mat_b,partial,result);
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 0;
 }

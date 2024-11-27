@@ -6,7 +6,8 @@
 //////////////////////////////////////////////
 
 #include <stdio.h>
-#include "tj_malloc.h"
+#include "pmu_defs.h"
+
 
 #define SHORT_TYPE_SIZE 32
 typedef short byte;
@@ -91,8 +92,14 @@ byte mult(byte x, byte y) {
 }
 
 int main() {
+    #ifdef PMU
+        start_counters(); 
+    #endif
     int a = mult(3, 16);
     int b = mult(4, 23);
     int c = mult(a, b);
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return c;
 }

@@ -5,7 +5,8 @@
 //////////////////////////////////////////////////////
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 #include <stdlib.h>
 #define N 99
 
@@ -50,6 +51,9 @@ int binarySearch(int arr[], int l, int r, int x) {
 
 int main(void) {
 
+    #ifdef PMU
+        start_counters(); 
+    #endif
     int arr[N];
     for (int i = 0; i < N; ++i)
         arr[i] = rand() & (31);
@@ -63,6 +67,8 @@ int main(void) {
     int brady = binarySearch(arr, 0, N-1,12);
 
 
-
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 0;
 }

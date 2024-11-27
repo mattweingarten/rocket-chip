@@ -1,4 +1,5 @@
 #include "mmio.h"
+#include "pmu_defs.h"
 
 #define GCD_STATUS 0x4000
 #define GCD_X 0x4004
@@ -18,6 +19,10 @@ unsigned int gcd_ref(unsigned int x, unsigned int y) {
 // DOC include start: GCD test
 int main(void)
 {
+
+  #ifdef PMU
+      start_counters(); 
+  #endif
   uint32_t result, ref, x = 20, y = 15;
 
   // wait for peripheral to be ready
@@ -35,9 +40,15 @@ int main(void)
 
   if (result != ref) {
     printf("Hardware result %d does not match reference value %d\n", result, ref);
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 1;
   }
   printf("Hardware result %d is correct for GCD\n", result);
+  #ifdef PMU
+      end_counters(); 
+  #endif
   return 0;
 }
 // DOC include end: GCD test

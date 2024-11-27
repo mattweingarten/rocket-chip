@@ -3,6 +3,7 @@
 
 #include "mmio.h"
 #include "blkdev.h"
+#include "pmu_defs.h"
 
 void blkdev_read(void *addr, unsigned long offset, size_t nsectors)
 {
@@ -64,6 +65,9 @@ unsigned int res_data[TEST_SIZE]  __attribute__ ((aligned (64)));
 
 int main(void)
 {
+    #ifdef PMU
+        start_counters(); 
+    #endif
 	unsigned int nsectors = blkdev_nsectors();
 	unsigned int max_req_len = blkdev_max_req_len();
 
@@ -100,6 +104,8 @@ int main(void)
 	}
 
 	printf("All correct\n");
-
+    #ifdef PMU
+        end_counters(); 
+    #endif
 	return 0;
 }

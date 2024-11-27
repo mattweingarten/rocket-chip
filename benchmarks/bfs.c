@@ -4,12 +4,14 @@
 // kindly contributed by group 1 Winter 2019
 //   - Jielun Tan, 12/2019
 //////////////////////////////////////////////////
-#include "tj_malloc.h"
 #include <stdlib.h>
 #include <stdbool.h>
+#include "pmu_defs.h"
+
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 #define MAX 5
 
@@ -56,7 +58,7 @@ bool isQueueEmpty() {
 
 //add vertex to the vertex list
 void addVertex(char label) {
-    struct Vertex* vertex = (struct Vertex*) tj_malloc(sizeof(struct Vertex));
+    struct Vertex* vertex = (struct Vertex*) malloc(sizeof(struct Vertex));
     vertex->label = label;
     vertex->visited = false;
     lstVertices[vertexCount++] = vertex;
@@ -109,6 +111,10 @@ void breadthFirstSearch() {
 }
 
 int main() {
+
+    #ifdef PMU
+        start_counters(); 
+    #endif   
     int i, j;
 
     for(i = 0; i<MAX; i++) {
@@ -131,6 +137,10 @@ int main() {
 
 
     breadthFirstSearch();
+
+    #ifdef PMU
+        start_counters(); 
+    #endif
 
     return 0;
 }

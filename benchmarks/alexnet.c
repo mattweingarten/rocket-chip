@@ -7,13 +7,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "pmu_defs.h"
 
 #define TEST_ITR 3
 
-#include "tj_malloc.h"
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 unsigned int lfsr = 0xACE1u;
 unsigned period = 0;
@@ -188,6 +189,10 @@ void cnn_to_fc(int cnn_feature[5][5][5], int cnn_feature_channel, int cnn_featur
 
 int main(){
 
+    #ifdef PMU
+        start_counters(); 
+    #endif
+
     int fc_weights[5][5];
     int fc_biasses[5];
     int fc_inputs[5];
@@ -248,6 +253,10 @@ int main(){
         fc_layer(fc_weights, fc_biasses, fc_inputs, fc_outputs, fc_input_num, fc_output_num, fc_af_type);
 
     }
+
+    #ifdef PMU
+        end_counters(); 
+    #endif
 
     return 0;
 

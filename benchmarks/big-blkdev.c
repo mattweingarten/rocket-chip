@@ -3,6 +3,7 @@
 
 #include "mmio.h"
 #include "blkdev.h"
+#include "pmu_defs.h"
 
 #define SECTOR_WORDS (BLKDEV_SECTOR_SIZE / sizeof(uint64_t))
 #define TEST_SECTORS 16
@@ -58,6 +59,9 @@ void check_sector(unsigned int secnum)
 
 int main(void)
 {
+    #ifdef PMU
+        start_counters(); 
+    #endif
 	unsigned int nsectors = blkdev_nsectors();
 	unsigned int stride = nsectors / TEST_SECTORS;
 
@@ -74,6 +78,9 @@ int main(void)
 		int sector = i * stride;
 		check_sector(sector);
 	}
+    #ifdef PMU
+        end_counters(); 
+    #endif
 
 	return 0;
 }

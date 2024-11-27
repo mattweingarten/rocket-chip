@@ -6,8 +6,11 @@
 ///////////////////////////////////
 #ifndef DEBUG
 extern void exit();
-#endif
-#include "tj_malloc.h"
+#endif 
+#include "pmu_defs.h"
+#include <stdbool.h>
+
+
 #include <stdio.h>
 
 typedef struct example_s{
@@ -19,7 +22,10 @@ typedef struct example_s{
 } example_t;
 
 int main() {
-    example_t* pats = (example_t*)tj_malloc(sizeof(example_t));
+    #ifdef PMU
+        start_counters(); 
+    #endif
+    example_t* pats = (example_t*)malloc(sizeof(example_t));
 #ifdef DEBUG
     printf("pts is %i\n", (int)pats);
     printf("what\n");
@@ -32,22 +38,25 @@ int main() {
 #ifdef DEBUG
     printf("%i\n", pats->edelman);
 #endif
-    example_t* another = (example_t*)tj_malloc(sizeof(example_t));
+    example_t* another = (example_t*)malloc(sizeof(example_t));
 #ifdef DEBUG
     printf("pts is %i\n", (int)another);
 #endif
-    tj_free(pats);
-    example_t* third = (example_t*)tj_malloc(sizeof(example_t));
+    free(pats);
+    example_t* third = (example_t*)malloc(sizeof(example_t));
     another->rings = 2003;
     third->rings = 2004;
 #ifdef DEBUG
     printf("created third %i\n", (int)third);
 #endif
     //let's make this test calloc
-    example_t* latest = (example_t*)tj_calloc(sizeof(example_t));
+    example_t* latest = (example_t*)calloc(1, sizeof(example_t));
     latest->rings = 2019;
     if (latest->goat != 0) exit(2);
-    tj_free(another);
-    tj_free(latest);
+    free(another);
+    free(latest);
+    #ifdef PMU
+        start_counters(); 
+    #endif
     return 0;
 }

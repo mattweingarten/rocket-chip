@@ -1,5 +1,6 @@
 #include "mmio.h"
 #include "nic.h"
+#include "pmu_defs.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -234,6 +235,10 @@ uint64_t buffer[ETH_MAX_WORDS];
 
 int main(void)
 {
+    #ifdef PMU
+        start_counters(); 
+    #endif
+
 	uint64_t macaddr_long;
 	uint8_t *macaddr;
 
@@ -249,6 +254,8 @@ int main(void)
 		if (process_packet(buffer, macaddr))
 			return -1;
 	}
-
+    #ifdef PMU
+        end_counters(); 
+    #endif
 	return 0;
 }

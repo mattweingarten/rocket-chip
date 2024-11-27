@@ -8,7 +8,8 @@
 #include <stdio.h>
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 // NOTE: matrix bounds must be 100 because variable matrices
 // would not compile on our version of the RISCV GNU compiler
@@ -75,6 +76,9 @@ void multiplyMatrix(int row1, int col1, int A[3][100],
 // Driven Program
 int main()
 {
+    #ifdef PMU
+        start_counters(); 
+    #endif
     int A[3][100] = { {1, 2, 3},
                       {4, 5, 6},
                       {7, 8, 9}};
@@ -85,6 +89,9 @@ int main()
 
     int row1 = 3, col1 = 3, row2 = 3, col2 = 3;
     multiplyMatrix(row1, col1, A, row2, col2, B);
+    #ifdef PMU
+        end_counters(); 
+    #endif
 
     return 0;
 }

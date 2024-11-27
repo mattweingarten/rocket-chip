@@ -5,6 +5,7 @@
 
 #include <riscv-pk/encoding.h>
 #include "nic.h"
+#include "pmu_defs.h"
 
 #define NPACKETS 10
 #define TEST_OFFSET 3
@@ -80,6 +81,10 @@ void run_test(void)
 
 int main(void)
 {
+    #ifdef PMU
+        start_counters(); 
+    #endif
+
 	int i, j;
 
 	for (i = 0; i < NPACKETS; i++) {
@@ -93,6 +98,9 @@ int main(void)
 	}
 
 	printf("All correct\n");
+    #ifdef PMU
+        end_counters(); 
+    #endif
 
 	return 0;
 }

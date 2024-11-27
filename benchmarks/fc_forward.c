@@ -7,7 +7,8 @@
 #include <stdio.h>
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 #define N 4
 
 int n = N;
@@ -25,6 +26,9 @@ void kernel(int  vec_a[n],int  vec_b[n], int result[n], int b, int *out) {
 
 
 int main() {
+    #ifdef PMU
+        start_counters(); 
+    #endif
     int x[n], W[n], inner[n];
     int b;
     int out;
@@ -37,6 +41,8 @@ int main() {
     b = rand();
     //the actual layer
     kernel(x,W,inner,b, &out);
-
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 0;
 }

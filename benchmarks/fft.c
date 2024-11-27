@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <math.h>
 
+#include "pmu_defs.h"
+
 #define FFT_WRITE_LANE  0x2400
 #define FFT_RD_LANE_BASE 0x2408
 // addr of read lane i is FFT_RD_LANE_BASE + i * 8
@@ -34,6 +36,9 @@ const uint32_t expected_outputs[8] = {
 };
 
 int main(void) {
+    #ifdef PMU
+        start_counters(); 
+    #endif
   int num_points = 8;
 
   // write points to fft
@@ -65,7 +70,9 @@ int main(void) {
       return -1;
     }
   }
-
+  #ifdef PMU
+      end_counters(); 
+  #endif
   printf("PASS: FFT Test Passed\n");
   return 0;
 }

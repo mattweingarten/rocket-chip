@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 #define N 99
 
@@ -25,12 +26,17 @@ void insertion(int arr[], int size){
 }
 
 int main(){
+    #ifdef PMU
+        start_counters(); 
+    #endif
     // numbers 0 - 22 (inclusive)
     int arr[N];
     for (int i = 0; i < N; ++i) 
         arr[i] = rand() % 1023;
 
     insertion(arr, N);
-
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 0;
 }

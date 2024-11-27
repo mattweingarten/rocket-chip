@@ -4,10 +4,10 @@
 // using Linked List
 #include <stdio.h>
 #include <stdlib.h>
-#include "tj_malloc.h"
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 // Node
 typedef struct node {
@@ -23,7 +23,7 @@ typedef struct node {
 // Function to Create A New Node
 Node* newNode(int d, int p)
 {
-    Node* temp = (Node*)tj_malloc(sizeof(Node));
+    Node* temp = (Node*)malloc(sizeof(Node));
     temp->data = d;
     temp->priority = p;
     temp->next = NULL;
@@ -43,7 +43,7 @@ void pop(Node** head)
 {
     Node* temp = *head;
     (*head) = (*head)->next;
-    tj_free(temp);
+    free(temp);
 }
 
 // Function to push according to priority
@@ -88,6 +88,10 @@ int isEmpty(Node** head)
 // Driver code
 int main()
 {
+
+    #ifdef PMU
+        start_counters(); 
+    #endif
     // Create a Priority Queue
     // 7->4->5->6
     Node* pq = newNode(4, 1);
@@ -101,6 +105,9 @@ int main()
 #endif
         pop(&pq);
     }
+    #ifdef PMU
+        end_counters(); 
+    #endif
 
     return 0;
 }

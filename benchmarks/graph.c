@@ -7,15 +7,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include "pmu_defs.h"
 
 #define RESULT_SHOW 0
 #define DEBUG_DEF 0
 
-#include "tj_malloc.h"
 
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 struct queue {
     int items[40];
@@ -37,7 +39,7 @@ struct Graph{
 };
 
 struct node* createNode(int v) {
-    struct node* newNode = (struct node*)tj_malloc(sizeof(struct node));
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
     newNode->vertex = v;
     newNode->next = NULL;
     return newNode;
@@ -45,11 +47,11 @@ struct node* createNode(int v) {
 
 struct Graph* createGraph(int vertices) {
     int i;
-    struct Graph* graph = (struct Graph*)tj_malloc(sizeof(struct Graph));
+    struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
     graph->numVertices = vertices;
 
-    graph->adjLists = (struct node**)tj_malloc(vertices * sizeof(struct node*));
-    graph->visited = (int*)tj_malloc(vertices * sizeof(int));
+    graph->adjLists = (struct node**)malloc(vertices * sizeof(struct node*));
+    graph->visited = (int*)malloc(vertices * sizeof(int));
 
     for (i = 0; i < vertices; i++) {
         graph->adjLists[i] = NULL;
@@ -72,7 +74,7 @@ void addEdge(struct Graph* graph, int src, int dest) {
 }
 
 struct queue* createQueue() {
-    struct queue* q = (struct queue*)tj_malloc(sizeof(struct queue));
+    struct queue* q = (struct queue*)malloc(sizeof(struct queue));
     q->front = -1;
     q->rear = -1;
     return q;
@@ -179,7 +181,7 @@ struct Node {
 };
 
 void insertAtTheBegin(struct Node **start_ref, int data) {
-    struct Node *ptr1 = (struct Node*)tj_malloc(sizeof(struct Node));
+    struct Node *ptr1 = (struct Node*)malloc(sizeof(struct Node));
     ptr1->data = data;
     ptr1->next = *start_ref;
     *start_ref = ptr1;
@@ -262,7 +264,7 @@ bool isStackEmpty() {
 
 
 void addVertex() {
-   struct Vertex* vertex = (struct Vertex*)tj_malloc(sizeof(struct Vertex));
+   struct Vertex* vertex = (struct Vertex*)malloc(sizeof(struct Vertex));
    vertex->visited = false;
    lstVertices[vertexCount++] = vertex;
 }
@@ -348,6 +350,10 @@ void towers_test(){
 
 int main(){
 
+    #ifdef PMU
+        start_counters(); 
+    #endif
+
     bfs_test();
 
     link_list();
@@ -355,6 +361,10 @@ int main(){
     DFS_test();
 
     towers_test();
+
+    #ifdef PMU
+        end_counters(); 
+    #endif
 
     return 0;
 }

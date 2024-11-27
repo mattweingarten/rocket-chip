@@ -2,6 +2,9 @@
 # RISCV Toolchain
 #################################
 
+
+
+
 TARGET = riscv64-unknown-elf
 
 GCC = $(TARGET)-gcc
@@ -21,15 +24,27 @@ ARCH = rv64imafdc
 ABI = lp64d
 ARCHFLAGS = -march=$(ARCH) -mabi=$(ABI)
 
-CFLAGS  = -std=gnu99 -O0 -fno-common -fno-builtin-printf -Wall
+
+CFLAGS = -O0 -fno-inline  
+
+
+CFLAGS += -std=gnu99 -fno-common -fno-builtin-printf -Wall
 CFLAGS += $(ARCHFLAGS)
 LDFLAGS = -static
+
+ifdef PMU
+	CFLAGS += -D=PMU
+endif
 
 include ./libgloss.mk
 
 PROGRAMS = pwm blkdev accum charcount nic-loopback big-blkdev pingd \
            streaming-passthrough streaming-fir nvdla spiflashread spiflashwrite fft gcd \
-           hello mt-hello symmetric
+           hello mt-hello symmetric graph \
+		   alexnet bfs basic_malloc backtrack \
+		   dft fc_forward fft insertionsort \
+		   matrix_mult_rec mergesort omegalul \
+		   outer_product priority_queue quicksort sort_search \ 
 
 
 .DEFAULT_GOAL := default

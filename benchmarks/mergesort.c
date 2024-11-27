@@ -1,6 +1,7 @@
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 // Merges two subarrays of arr[].
 // First subarray is arr[l..m]
@@ -76,8 +77,13 @@ void mergeSort(int arr[], int l, int r)
     }
 }
 int main() {
+    #ifdef PMU
+        start_counters(); 
+    #endif
     int data[] = {32,15,321,5,4,3,2,74,9,4,846,1315,84,6548,47,6113,1,17,485,1348,4,1341,768};
     mergeSort(data, 0, 23);
-
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 0;
 }

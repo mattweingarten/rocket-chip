@@ -11,7 +11,8 @@
 
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 int solveKTUtil(int x, int y, int movei, int sol[N][N],int xMove[],  int yMove[]);
 
@@ -91,6 +92,12 @@ int solveKTUtil(int x, int y, int movei, int sol[N][N], int xMove[N], int yMove[
 /* Driver program to test above functions */
 int main()
 {
+    #ifdef PMU
+        start_counters(); 
+    #endif
     solveKT();
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 0;
 }

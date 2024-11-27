@@ -6,7 +6,8 @@
 
 #ifndef DEBUG
 extern void exit();
-#endif
+#endif 
+#include "pmu_defs.h"
 
 #define N 99
 
@@ -67,6 +68,9 @@ void printArray(int arr[], int size) {
 
 // Driver program to test above functions
 int main() {
+    #ifdef PMU
+        start_counters(); 
+    #endif
     int arr[N];
     for (int i = 0; i < N; ++i)
         arr[i] = rand() & 1023;
@@ -75,6 +79,8 @@ int main() {
     printf("Sorted array: n");
     printArray(arr, N);
 #endif
-
+    #ifdef PMU
+        end_counters(); 
+    #endif
     return 0;
 }

@@ -12,7 +12,7 @@ ifndef TARGET
 $(error TARGET is not defined)
 endif
 
-libgloss_specs := htif.specs
+libgloss_specs := htif_nano.specs
 
 # Test whether libgloss-htif is globally installed and usable
 # Define BUILD_LIBGLOSS=1 to unconditionally force a local build
