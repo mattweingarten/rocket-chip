@@ -2,8 +2,9 @@
 #define PMU_DEFS_H_
 
 #include <riscv-pk/encoding.h>
-#include <stdint.h>
+#ifndef BARE
 #include <stdio.h>
+#endif
 
 #define MAX_PMU_COUNT 31
 
@@ -21,12 +22,12 @@
 #define EN_MASK 0xFFFFFFFF
 
 // Existing Event Sets
-#define INS_EVT  0x1UL
-#define UOP_EVT  0x2UL
-#define MEM_EVT  0x3UL
+#define INS_EVT  0x0UL
+#define UOP_EVT  0x1UL
+#define MEM_EVT  0x2UL
 
 // Additional Event Sets
-#define CUS_EVT  0x4Ul
+#define CUS_EVT  0x3Ul
 
 
 #define EVT(n)   1UL<<(n + 8)
@@ -73,8 +74,8 @@
 #define ITLB_MISS EVT(3)
 #define DTLB_MISS EVT(4)
 
-uint64_t start[MAX_PMU_COUNT]; 
-uint64_t end[MAX_PMU_COUNT]; 
+unsigned long long start[MAX_PMU_COUNT]; 
+unsigned long long end[MAX_PMU_COUNT]; 
 char* name[MAX_PMU_COUNT]; 
 
 
@@ -90,7 +91,6 @@ void set_counters_config_1(){
     name[1] = "Int Ret";
     write_csr(mhpmevent3, INS_EVT | INT_STORE_RET | INT_LOAD_RET);
     name[2] = "Store/Load Ret";
-
     write_csr(mhpmevent4, INS_EVT | ATOM_MEM_RET | SYST_INS_RET);
     name[3] = "Atom/Sys Ret";
     write_csr(mhpmevent5, INS_EVT | COND_BR_RET | JAL_RET | JALR_RET);
@@ -119,40 +119,70 @@ void set_counters_config_1(){
     name[15] = "DCache WB";
     write_csr(mhpmevent17, MEM_EVT | DTLB_MISS);
     name[16] = "DTLB miss";
+
+
+    write_csr(mhpmevent18, CUS_EVT | EVT(0));
+    name[17] = "Ex valid";
+    write_csr(mhpmevent19, CUS_EVT | EVT(1));
+    name[18] = "Mem valid";
+    write_csr(mhpmevent20, CUS_EVT | EVT(2));
+    name[19] = "WB valid";
+    write_csr(mhpmevent21, CUS_EVT | EVT(3));
+    name[20] = "Ex reg valid";
+    write_csr(mhpmevent22, CUS_EVT | EVT(4));
+    name[21] = "Mem reg valid";
+    write_csr(mhpmevent23, CUS_EVT | EVT(5));
+    name[22] = "Wb reg valid";
+
+
+    write_csr(mhpmevent24, CUS_EVT | EVT(6));
+    name[23] = "Ex replay";
+    write_csr(mhpmevent25, CUS_EVT | EVT(7));
+    name[24] = "Mem replay";
+    write_csr(mhpmevent26, CUS_EVT | EVT(8));
+    name[25] = "Wb replay";
+    write_csr(mhpmevent27, CUS_EVT | EVT(9));
+    name[26] = "IBuf valid";
+    write_csr(mhpmevent28, CUS_EVT | EVT(10));
+    name[27] = "IBuf rep";
+    write_csr(mhpmevent29, CUS_EVT | EVT(11));
+    name[28] = "ID !kill";
+    write_csr(mhpmevent30, CUS_EVT | EVT(12));
+    name[29] = "ID Stall";
 }
 
 void read_start_counters(){
     start[0] = read_csr_safe(cycle);
     start[1] = read_csr_safe(instret);
-    start[2] =  read_csr_safe(mhpmevent3);
-    start[3] =  read_csr_safe(mhpmevent4);
-    start[4] =  read_csr_safe(mhpmevent5);
-    start[5] =  read_csr_safe(mhpmevent6);
-    start[6] =  read_csr_safe(mhpmevent7);
-    start[7] =  read_csr_safe(mhpmevent8);
-    start[8] =  read_csr_safe(mhpmevent9);
-    start[9] =  read_csr_safe(mhpmevent10);
-    start[10] = read_csr_safe(mhpmevent11);
-    start[11] = read_csr_safe(mhpmevent12);
-    start[12] = read_csr_safe(mhpmevent13);
-    start[13] = read_csr_safe(mhpmevent14);
-    start[14] = read_csr_safe(mhpmevent15);
-    start[15] = read_csr_safe(mhpmevent16);
-    start[16] = read_csr_safe(mhpmevent17);
-    start[17] = read_csr_safe(mhpmevent18);
-    start[18] = read_csr_safe(mhpmevent19);
-    start[19] = read_csr_safe(mhpmevent20);
-    start[20] = read_csr_safe(mhpmevent21);
-    start[21] = read_csr_safe(mhpmevent22);
-    start[22] = read_csr_safe(mhpmevent23);
-    start[23] = read_csr_safe(mhpmevent24);
-    start[24] = read_csr_safe(mhpmevent25);
-    start[25] = read_csr_safe(mhpmevent26);
-    start[26] = read_csr_safe(mhpmevent27);
-    start[27] = read_csr_safe(mhpmevent28);
-    start[28] = read_csr_safe(mhpmevent29);
-    start[29] = read_csr_safe(mhpmevent30);
-    start[30] = read_csr_safe(mhpmevent31);
+    start[2] =  read_csr_safe(hpmcounter3);
+    start[3] =  read_csr_safe(hpmcounter4);
+    start[4] =  read_csr_safe(hpmcounter5);
+    start[5] =  read_csr_safe(hpmcounter6);
+    start[6] =  read_csr_safe(hpmcounter7);
+    start[7] =  read_csr_safe(hpmcounter8);
+    start[8] =  read_csr_safe(hpmcounter9);
+    start[9] =  read_csr_safe(hpmcounter10);
+    start[10] = read_csr_safe(hpmcounter11);
+    start[11] = read_csr_safe(hpmcounter12);
+    start[12] = read_csr_safe(hpmcounter13);
+    start[13] = read_csr_safe(hpmcounter14);
+    start[14] = read_csr_safe(hpmcounter15);
+    start[15] = read_csr_safe(hpmcounter16);
+    start[16] = read_csr_safe(hpmcounter17);
+    start[17] = read_csr_safe(hpmcounter18);
+    start[18] = read_csr_safe(hpmcounter19);
+    start[19] = read_csr_safe(hpmcounter20);
+    start[20] = read_csr_safe(hpmcounter21);
+    start[21] = read_csr_safe(hpmcounter22);
+    start[22] = read_csr_safe(hpmcounter23);
+    start[23] = read_csr_safe(hpmcounter24);
+    start[24] = read_csr_safe(hpmcounter25);
+    start[25] = read_csr_safe(hpmcounter26);
+    start[26] = read_csr_safe(hpmcounter27);
+    start[27] = read_csr_safe(hpmcounter28);
+    start[28] = read_csr_safe(hpmcounter29);
+    start[29] = read_csr_safe(hpmcounter30);
+    start[30] = read_csr_safe(hpmcounter31);
 }
 
 
@@ -167,39 +197,44 @@ void start_counters(){
 void end_counters(){
     end[0] = read_csr_safe(cycle);
     end[1] = read_csr_safe(instret);
-    end[2] =  read_csr_safe(mhpmevent3);
-    end[3] =  read_csr_safe(mhpmevent4);
-    end[4] =  read_csr_safe(mhpmevent5);
-    end[5] =  read_csr_safe(mhpmevent6);
-    end[6] =  read_csr_safe(mhpmevent7);
-    end[7] =  read_csr_safe(mhpmevent8);
-    end[8] =  read_csr_safe(mhpmevent9);
-    end[9] =  read_csr_safe(mhpmevent10);
-    end[10] = read_csr_safe(mhpmevent11);
-    end[11] = read_csr_safe(mhpmevent12);
-    end[12] = read_csr_safe(mhpmevent13);
-    end[13] = read_csr_safe(mhpmevent14);
-    end[14] = read_csr_safe(mhpmevent15);
-    end[15] = read_csr_safe(mhpmevent16);
-    end[16] = read_csr_safe(mhpmevent17);
-    end[17] = read_csr_safe(mhpmevent18);
-    end[18] = read_csr_safe(mhpmevent19);
-    end[19] = read_csr_safe(mhpmevent20);
-    end[20] = read_csr_safe(mhpmevent21);
-    end[21] = read_csr_safe(mhpmevent22);
-    end[22] = read_csr_safe(mhpmevent23);
-    end[23] = read_csr_safe(mhpmevent24);
-    end[24] = read_csr_safe(mhpmevent25);
-    end[25] = read_csr_safe(mhpmevent26);
-    end[26] = read_csr_safe(mhpmevent27);
-    end[27] = read_csr_safe(mhpmevent28);
-    end[28] = read_csr_safe(mhpmevent29);
-    end[29] = read_csr_safe(mhpmevent30);
-    end[30] = read_csr_safe(mhpmevent31);
+    end[2] =  read_csr_safe(hpmcounter3);
+    end[3] =  read_csr_safe(hpmcounter4);
+    end[4] =  read_csr_safe(hpmcounter5);
+    end[5] =  read_csr_safe(hpmcounter6);
+    end[6] =  read_csr_safe(hpmcounter7);
+    end[7] =  read_csr_safe(hpmcounter8);
+    end[8] =  read_csr_safe(hpmcounter9);
+    end[9] =  read_csr_safe(hpmcounter10);
+    end[10] = read_csr_safe(hpmcounter11);
+    end[11] = read_csr_safe(hpmcounter12);
+    end[12] = read_csr_safe(hpmcounter13);
+    end[13] = read_csr_safe(hpmcounter14);
+    end[14] = read_csr_safe(hpmcounter15);
+    end[15] = read_csr_safe(hpmcounter16);
+    end[16] = read_csr_safe(hpmcounter17);
+    end[17] = read_csr_safe(hpmcounter18);
+    end[18] = read_csr_safe(hpmcounter19);
+    end[19] = read_csr_safe(hpmcounter20);
+    end[20] = read_csr_safe(hpmcounter21);
+    end[21] = read_csr_safe(hpmcounter22);
+    end[22] = read_csr_safe(hpmcounter23);
+    end[23] = read_csr_safe(hpmcounter24);
+    end[24] = read_csr_safe(hpmcounter25);
+    end[25] = read_csr_safe(hpmcounter26);
+    end[26] = read_csr_safe(hpmcounter27);
+    end[27] = read_csr_safe(hpmcounter28);
+    end[28] = read_csr_safe(hpmcounter29);
+    end[29] = read_csr_safe(hpmcounter30);
+    end[30] = read_csr_safe(hpmcounter31);
 
     for(unsigned int i = 0; i < MAX_PMU_COUNT; ++i){
-        uint64_t diff = end[i] - start[i];
-        printf("%s: 0x%llx\n",name[i], diff);
+        unsigned long long diff = end[i] - start[i];
+        #ifndef BARE
+
+        printf("%s: %lu\n",name[i], diff);
+        #else 
+        debug_printf("%s: 0x%lu\n",name[i], diff);
+        #endif
     }
 }
 
