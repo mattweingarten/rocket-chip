@@ -25,7 +25,7 @@ ABI = lp64d
 ARCHFLAGS = -march=$(ARCH) -mabi=$(ABI)
 
 
-CFLAGS = -O0 -fno-inline  
+CFLAGS = $(OPT)
 
 
 CFLAGS += -std=gnu99 -fno-common -fno-builtin-printf -Wall

@@ -2,5 +2,6 @@ libgloss
 *.riscv
 *.dump
 *.o
-*.s
+*.sq
 *.img
+*.out
