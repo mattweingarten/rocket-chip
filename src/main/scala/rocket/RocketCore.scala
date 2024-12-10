@@ -153,6 +153,22 @@ class Rocket(tile: RocketTile)(implicit p: Parameters) extends CoreModule()(p)
 
   class RocketImpl { // entering gated-clock domain
 
+  // monitor for top-down analysis
+  //   MG - for now, the multiplication lane in the monitor abstracts the entire execution unit
+  val topdownMonitor = new RocketTopdownMonitor
+  topdownMonitor.clk_i := gated_clock
+  topdownMonitor.rst_ni := !reset
+  topdownMonitor.io.inhibit_i := false.B
+  topdownMonitor.io.iside_wait_i := icache_blocked
+  topdownMonitor.io.dside_wait_i := dcache_blocked
+  topdownMonitor.io.mul_wait_i := false.B
+  topdownMonitor.io.div_wait_i := false.B // TODO: div unit unused in monitor
+  topdownMonitor.io.mispredict_i := take_pc_mem && mem_direction_misprediction
+  topdownMonitor.io.alu_req_i := false.B // TODO: alu unit unused in monitor
+  topdownMonitor.io.mul_req_i := ex_reg_valid
+  topdownMonitor.io.div_req_i := false.B // TODO: div unit unused in monitor
+  topdownMonitor.io.lsu_req_i := id_ctrl.mem
+
   // performance counters
   def pipelineIDToWB[T <: Data](x: T): T =
     RegEnable(RegEnable(RegEnable(x, !ctrl_killd), ex_pc_valid), mem_pc_valid)
@@ -210,13 +226,14 @@ class Rocket(tile: RocketTile)(implicit p: Parameters) extends CoreModule()(p)
       ("Mem replay", () => mem_reg_replay),
       ("Wb replay", () => wb_reg_replay),
       // Here we probably don't need to reduce, only look at inst(0)
-      ("IBuf valid", () => ibuf.io.inst.map(_.valid ).reduce(_ ||      _)), 
-      ("IBuf replay", () => ibuf.io.inst.map(_.bits.replay).reduce(_ ||      _)), 
+      ("IBuf valid", () => ibuf.io.inst.map(_.valid ).reduce(_ ||      _)),
+      ("IBuf replay", () => ibuf.io.inst.map(_.bits.replay).reduce(_ ||      _)),
       // ID decode should always be able to handle one instr per cycle with no exceptions. Stalls here must be triggered for other reasons.
       ("ID kill", () => !ctrl_killd),
-      // Todo: we are not capturing all the stalls here. 
+      // Todo: we are not capturing all the stalls here.
       ("ID stall", () => (take_pc_mem_wb ))
-    ))))
+    )),
+    topdownMonitor.getEventSet))
 
   val pipelinedMul = usingMulDiv && mulDivParams.mulUnroll == xLen
   val decode_table = {
