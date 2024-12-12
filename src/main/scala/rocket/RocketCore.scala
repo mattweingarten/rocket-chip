@@ -210,12 +210,19 @@ class Rocket(tile: RocketTile)(implicit p: Parameters) extends CoreModule()(p)
       ("Mem replay", () => mem_reg_replay),
       ("Wb replay", () => wb_reg_replay),
       // Here we probably don't need to reduce, only look at inst(0)
-      ("IBuf valid", () => ibuf.io.inst.map(_.valid ).reduce(_ ||      _)), 
-      ("IBuf replay", () => ibuf.io.inst.map(_.bits.replay).reduce(_ ||      _)), 
+      ("IBuf valid", () => ibuf.io.inst(0).valid), 
+      ("IBuf cache-block", () => !ibuf.io.inst(0).valid && icache_blocked), 
       // ID decode should always be able to handle one instr per cycle with no exceptions. Stalls here must be triggered for other reasons.
-      ("ID kill", () => !ctrl_killd),
+      ("ID kill", () => ctrl_killd),
       // Todo: we are not capturing all the stalls here. 
-      ("ID stall", () => (take_pc_mem_wb ))
+      ("ID stall", () => ctrl_stalld_w && !take_pc_mem_wb),
+      ("Ctrl dependency", () => id_ex_hazard), 
+      ("Data dependency", () => id_mem_hazard || id_wb_hazard), 
+      ("Stall due to mispr", () => take_pc_mem_wb),
+      ("Data hazard ex", () => data_hazard_ex),
+      ("Data hazard mem", () => data_hazard_mem),
+      ("Data hazard wb", () => data_hazard_wb),
+      ("IBuf ready", () => ibuf.io.inst(0).ready && ibuf.io.inst(0).valid)
     ))))
 
   val pipelinedMul = usingMulDiv && mulDivParams.mulUnroll == xLen
@@ -332,6 +339,7 @@ class Rocket(tile: RocketTile)(implicit p: Parameters) extends CoreModule()(p)
   val rf = new RegFile(regAddrMask, xLen)
   val id_rs = id_raddr.map(rf.read _)
   val ctrl_killd = Wire(Bool())
+  val ctrl_stalld_w = Wire(Bool())
   val id_npc = (ibuf.io.pc.asSInt + ImmGen(IMM_UJ, id_inst(0))).asUInt
 
   val csr = Module(new CSRFile(perfEvents, coreParams.customCSRs.decls, tile.roccCSRs.flatten, tile.rocketParams.beuAddr.isDefined))
@@ -861,18 +869,19 @@ class Rocket(tile: RocketTile)(implicit p: Parameters) extends CoreModule()(p)
   rocc_blocked := !wb_xcpt && !io.rocc.cmd.ready && (io.rocc.cmd.valid || rocc_blocked)
 
   val ctrl_stalld =
-    id_ex_hazard || id_mem_hazard || id_wb_hazard || id_sboard_hazard ||
-    csr.io.singleStep && (ex_reg_valid || mem_reg_valid || wb_reg_valid) ||
-    id_csr_en && csr.io.decode(0).fp_csr && !io.fpu.fcsr_rdy ||
-    id_ctrl.fp && id_stall_fpu ||
+    id_ex_hazard || id_mem_hazard || id_wb_hazard || id_sboard_hazard || // hazards
+    csr.io.singleStep && (ex_reg_valid || mem_reg_valid || wb_reg_valid) || // don't care
+    id_csr_en && csr.io.decode(0).fp_csr && !io.fpu.fcsr_rdy || // don't care
+    id_ctrl.fp && id_stall_fpu || // don't care for now
     id_ctrl.mem && dcache_blocked || // reduce activity during D$ misses
     id_ctrl.rocc && rocc_blocked || // reduce activity while RoCC is busy
     id_ctrl.div && (!(div.io.req.ready || (div.io.resp.valid && !wb_wxd)) || div.io.req.valid) || // reduce odds of replay
-    !clock_en ||
-    id_do_fence ||
-    csr.io.csr_stall ||
-    id_reg_pause ||
-    io.traceStall
+    !clock_en || // don't care
+    id_do_fence || // don't care 
+    csr.io.csr_stall || //don't care 
+    id_reg_pause || // don't care
+    io.traceStall // don't care
+  ctrl_stalld_w := ctrl_stalld 
   ctrl_killd := !ibuf.io.inst(0).valid || ibuf.io.inst(0).bits.replay || take_pc_mem_wb || ctrl_stalld || csr.io.interrupt
 
   io.imem.req.valid := take_pc
