@@ -2,7 +2,7 @@
 
 ## Collaborators
 
-Micheal (mag2346)
+Michael (mag2346)
 Prathmesh (pp2870)
 Matt (mew2260)
 
@@ -11,7 +11,7 @@ Matt (mew2260)
 
 DO NOT use git submodule recurse. Follow steps here.
 
-
+## RocketChip setup
 
 ### Step 1 -- Install Conda
 
@@ -138,24 +138,113 @@ mcycle = 229097
 minstret = 187526
 ```
 
+## Ibex setup
 
+### Step 1: initialize and install requirements
 
+#### Clone repository
 
+```
+cd <REPOSITORY_ROOT>
+git submodule update --init ibex
+cd ibex
+git checkout master
+```
 
+#### Install Python packages
 
+```
+cd <REPOSITORY_ROOT>/ibex
+pip3 install -U -r python-requirements.txt
+```
 
+#### Install Verilator
 
+```
+cd <INSTALL_DIRECTORY>
 
+# clone repository
+git clone https://github.com/verilator/verilator
+cd verilator
+git pull
 
+# create configure script and run
+autoconf
+export VERILATOR_ROOT=`pwd`
+./configure
+export VERILATOR_AUTHOR_SITE=1
+./configure --enable-longtests
 
+# install
+make -j `nproc`
 
+# save paths to .bashrc file
+echo "export VERILATOR_AUTHOR_SITE=1" >> ~/.bashrc
+echo "export VERILATOR_ROOT=`pwd`" >> ~/.bashrc
+echo "export PATH=\"`pwd`/bin:${PATH}`"" >> ~/.bashrc
+```
 
+#### Install RISC-V compiler
 
+Please download a release of the lowrisc compiler from [GitHub](https://github.com/lowRISC/lowrisc-toolchains/releases).
 
+Then, de-compress it and add the bin to your PATH variable (in your `~/.bashrc` file):
 
+```
 
+tar -xf  <location of your tar.gz> --strip-components=1 -C ~/.local
 
+echo "export PATH="${PATH}:<location of the unzipped lowrisc-toolchain directory>/bin"
 
+```
 
+### Step 2: generate and compile RTL code
 
+```
+cd <REPOSITORY_ROOT>/ibex
 
+# generate code
+pushd topdown-monitor
+make ibex
+popd
+
+# generate system with fusesoc
+make build-simple-system
+```
+
+### Step 3: compile and run benchmark
+
+```
+cd <REPOSITORY_ROOT>/ibex
+
+make run-simple-system
+```
+
+You should get the following output (your numbers may vary depending on the version:
+
+```
+Performance Counters
+====================
+Cycles:                      1804243
+Instructions Retired:        574366
+LSU Busy:                    156970
+Fetch Wait:                  63709
+Loads:                       69595
+Stores:                      87375
+Jumps:                       57541
+Conditional Branches:        72499
+Taken Conditional Branches:  47203
+Compressed Instructions:     311410
+Multiply Wait:               15600
+Divide Wait:                 887112
+Base Component:              575237
+ICache Component:            63709
+Branch Prediction Component: 0
+Dcache Component:            0
+Execution Component:         872070
+Dependency Component:        293227
+Frontend Cycles:             63709
+Backend Cycles:              1.05968e+06
+Frontend CPI:                0.1109
+Backend CPI:                 1.8450
+```
