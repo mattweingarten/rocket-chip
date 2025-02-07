@@ -106,7 +106,7 @@ class WithNSmallBooms(n: Int = 1) extends Config(
               maxBrCount = 8,
               numFetchBufferEntries = 8,
               ftq = FtqParameters(nEntries=16),
-              nPerfCounters = 2,
+              nPerfCounters = 29,
               fpu = Some(freechips.rocketchip.tile.FPUParams(sfmaLatency=4, dfmaLatency=4, divSqrt=true))
             ),
             dcache = Some(
@@ -153,7 +153,7 @@ class WithNMediumBooms(n: Int = 1) extends Config(
               maxBrCount = 12,
               numFetchBufferEntries = 16,
               ftq = FtqParameters(nEntries=32),
-              nPerfCounters = 6,
+              nPerfCounters = 29,
               fpu = Some(freechips.rocketchip.tile.FPUParams(sfmaLatency=4, dfmaLatency=4, divSqrt=true))
             ),
             dcache = Some(
@@ -247,6 +247,7 @@ class WithNMegaBooms(n: Int = 1) extends Config(
               maxBrCount = 20,
               numFetchBufferEntries = 32,
               enablePrefetching = true,
+              nPerfCounters = 29,
               ftq = FtqParameters(nEntries=40),
               fpu = Some(freechips.rocketchip.tile.FPUParams(sfmaLatency=4, dfmaLatency=4, divSqrt=true))
             ),
