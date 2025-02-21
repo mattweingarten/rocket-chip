@@ -3,11 +3,12 @@
 package freechips.rocketchip.tile
 
 import chisel3._
-import chisel3.util.isPow2
+import chisel3.util.{isPow2}
 import org.chipsalliance.cde.config._
 import freechips.rocketchip.rocket._
 import freechips.rocketchip.util._
 
+case object CoreKey extends Field[CoreParams]
 case object XLen extends Field[Int]
 case object MaxHartIdBits extends Field[Int]
 
@@ -70,7 +71,12 @@ trait CoreParams {
 }
 
 trait HasCoreParameters extends HasTileParameters {
-  val coreParams: CoreParams = tileParams.core
+  implicit val p: Parameters
+  //def coreParams: CoreParams = p(TileKey).core
+  def coreParams: CoreParams =
+    if (p.lift(TileKey).isDefined && p(TileKey) != null) p(TileKey).core
+    else if (p.lift(CoreKey).isDefined && p(CoreKey) != null) p(CoreKey)
+    else null
 
   val minFLen = coreParams.fpu.map(_ => coreParams.minFLen).getOrElse(0)
   val fLen = coreParams.fpu.map(_.fLen).getOrElse(0)
